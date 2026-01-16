@@ -73,15 +73,12 @@ class InvoiceCalculator {
      * Calculate line item total
      * This one actually works correctly!
      *
-     * @param array $item Item with price and quantity/qty
+     * @param array $item Item with price and quantity
      * @return float Line item total
      */
     public static function calculateLineItem($item) {
         $price = $item['price'];
-
-        // Handle both 'quantity' and 'qty' naming
-        // (Someone was inconsistent with naming)
-        $quantity = isset($item['quantity']) ? $item['quantity'] : $item['qty'];
+        $quantity = $item['quantity'];
 
         return $price * $quantity;
     }

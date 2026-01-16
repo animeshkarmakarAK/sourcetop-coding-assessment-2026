@@ -49,10 +49,6 @@ class InvoiceTest
         return $this->testsFailed === 0;
     }
 
-    /**
-     * Test: Create basic invoice
-     * Status: PASSING ✓
-     */
     private function test_create_invoice()
     {
         $invoice = new Invoice("Test Customer");
@@ -64,13 +60,6 @@ class InvoiceTest
         );
     }
 
-    /**
-     * Test: Calculate total for single item
-     * Status: FAILING ✗
-     *
-     * This test fails because of the qty/quantity mismatch bug
-     * The total comes back as 0 instead of expected value
-     */
     private function test_calculate_total()
     {
         $invoice = new Invoice("Test Customer");
@@ -86,12 +75,6 @@ class InvoiceTest
         );
     }
 
-    /**
-     * Test: Add multiple items and calculate total
-     * Status: FAILING ✗
-     *
-     * Also fails due to the same qty/quantity bug
-     */
     private function test_add_multiple_items()
     {
         $invoice = new Invoice("Test Customer");
@@ -109,13 +92,6 @@ class InvoiceTest
         );
     }
 
-    /**
-     * Test: Save invoice to file and load it back
-     * Status: FAILING ✗
-     *
-     * Fails because saveToFile() overwrites the entire file
-     * When loading, it can't find the invoice because structure is wrong
-     */
     private function test_save_and_load()
     {
         $testFile = __DIR__ . '/../data/invoices.json';
@@ -159,13 +135,6 @@ class InvoiceTest
         }
     }
 
-    /**
-     * Test: Tax calculation
-     * Status: PASSING ✓
-     *
-     * This works because the hardcoded tax rate is consistent
-     * (Even though it should load from JSON instead)
-     */
     private function test_tax_calculation()
     {
         $subtotal = 100.00;

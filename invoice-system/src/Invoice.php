@@ -36,7 +36,7 @@ class Invoice
         $this->items[] = [
             'name' => $name,
             'price' => $price,
-            'qty' => $quantity  // Using 'qty' here
+            'quantity' => $quantity,
         ];
     }
 
@@ -49,8 +49,7 @@ class Invoice
         $total = 0;
 
         foreach ($this->items as $item) {
-            // Accessing 'quantity' but we stored it as 'qty'!
-            $total += $item['price'] * $item['qty'];
+            $total += $item['price'] * $item['quantity'];
         }
         return $total - $this->discount;
     }
@@ -160,9 +159,8 @@ class Invoice
                 $invoice->discount = $invoiceData['discount'];
 
                 foreach ($invoiceData['items'] as $item) {
-                    // This might break because of the qty/quantity issue
-                    $qty = isset($item['quantity']) ? $item['quantity'] : $item['qty'];
-                    $invoice->addItem($item['name'], $item['price'], $qty);
+                    $quantity = $item['quantity'];
+                    $invoice->addItem($item['name'], $item['price'], $quantity);
                 }
 
                 return $invoice;

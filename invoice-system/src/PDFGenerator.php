@@ -60,13 +60,13 @@ class PDFGenerator {
         $html .= '<tr><th>Item</th><th>Price</th><th>Quantity</th><th>Total</th></tr>';
 
         foreach ($invoice->getItems() as $item) {
-            $qty = isset($item['quantity']) ? $item['quantity'] : $item['qty'];
-            $lineTotal = $item['price'] * $qty;
+            $quantity = $item['quantity'];
+            $lineTotal = $item['price'] * $quantity;
 
             $html .= '<tr>';
             $html .= '<td>' . htmlspecialchars($item['name']) . '</td>';
             $html .= '<td>$' . number_format($item['price'], 2) . '</td>';
-            $html .= '<td>' . $qty . '</td>';
+            $html .= '<td>' . $quantity . '</td>';
             $html .= '<td>$' . number_format($lineTotal, 2) . '</td>';
             $html .= '</tr>';
         }
