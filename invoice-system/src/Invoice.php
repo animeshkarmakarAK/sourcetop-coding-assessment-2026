@@ -19,11 +19,42 @@ class Invoice
     private $id;
     private $createdAt;
 
+    public const FILEPATH = 'data/invoices.json';
+
     public function __construct($customerName)
     {
         $this->customer = $customerName;
-        $this->id = time(); // Not sure if this is the best approach...
+        $this->id = self::generateNextId();
         $this->createdAt = date('Y-m-d H:i:s');
+    }
+
+    /**
+     * Generate the next sequential invoice ID
+     * Reads existing invoices and returns the next ID in ascending order
+     */
+    private static function generateNextId(): int
+    {
+        $maxId = 0;
+
+        if (file_exists(self::FILEPATH)) {
+            $contents = file_get_contents(self::FILEPATH);
+            $invoices = json_decode($contents, true);
+
+            if (!empty($invoices)) {
+                // Handle both single invoice and array of invoices
+                if (isset($invoices['id'])) {
+                    $invoices = [$invoices];
+                }
+
+                foreach ($invoices as $invoice) {
+                    if (isset($invoice['id']) && is_numeric($invoice['id'])) {
+                        $maxId = max($maxId, (int)$invoice['id']);
+                    }
+                }
+            }
+        }
+
+        return $maxId + 1;
     }
 
     /**
@@ -116,19 +147,19 @@ class Invoice
      * FIXME: This overwrites everything! Need to fix but running out of time
      * Should APPEND to the file, not replace it
      */
-    public function saveToFile($filename = 'data/invoices.json'): bool
+    public function saveToFile(): bool
     {
         $newData = $this->toArray();
         $existingData = [];
 
-        if (file_exists($filename)) {
-            $existingContent = file_get_contents($filename);
+        if (file_exists(self::FILEPATH)) {
+            $existingContent = file_get_contents(self::FILEPATH);
             $existingData = json_decode($existingContent, true) ?: [];
         }
 
         $existingData[] = $newData;
 
-        file_put_contents($filename, json_encode($existingData, JSON_PRETTY_PRINT));
+        file_put_contents(self::FILEPATH, json_encode($existingData, JSON_PRETTY_PRINT));
 
         return true;
     }
@@ -137,13 +168,13 @@ class Invoice
      * Load invoice from file by ID
      * Started this but didn't finish testing it
      */
-    public static function loadFromFile($id, $filename = 'data/invoices.json'): Invoice
+    public static function loadFromFile($id): Invoice
     {
-        if (!file_exists($filename)) {
+        if (!file_exists(self::FILEPATH)) {
             throw new Exception("Invoice file not found");
         }
 
-        $contents = file_get_contents($filename);
+        $contents = file_get_contents(self::FILEPATH);
         $invoices = json_decode($contents, true);
 
         // Handle both single invoice and array of invoices

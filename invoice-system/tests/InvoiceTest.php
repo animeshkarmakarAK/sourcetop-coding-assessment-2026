@@ -92,14 +92,18 @@ class InvoiceTest
         );
     }
 
-    private function test_save_and_load()
+    private function cleanupTestFile($filePath): void
+    {
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+    }
+
+    private function test_save_and_load(): void
     {
         $testFile = __DIR__ . '/../data/invoices.json';
 
-        // Clean up first
-        if (file_exists($testFile)) {
-            unlink($testFile);
-        }
+        $this->cleanupTestFile($testFile);
 
         // Create and save first invoice
         $invoice1 = new Invoice("Customer 1");
@@ -111,9 +115,6 @@ class InvoiceTest
         $invoice2->addItem("Item B", 200.00, 1);
         $invoice2->saveToFile($testFile);
 
-
-        // Try to load first invoice - this will fail
-        // because saveToFile overwrites everything
         try {
             $loaded = Invoice::loadFromFile($invoice1->getId(), $testFile);
             $this->assert(
@@ -129,13 +130,10 @@ class InvoiceTest
             );
         }
 
-        // Clean up
-        if (file_exists($testFile)) {
-            unlink($testFile);
-        }
+        $this->cleanupTestFile($testFile);
     }
 
-    private function test_tax_calculation()
+    private function test_tax_calculation(): void
     {
         $subtotal = 100.00;
         $tax = InvoiceCalculator::calculateTax($subtotal, 'US-CA');
