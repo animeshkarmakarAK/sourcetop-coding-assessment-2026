@@ -6,7 +6,8 @@
  * Static utility methods for business logic
  * Client keeps changing their mind on requirements...
  */
-class InvoiceCalculator {
+class InvoiceCalculator
+{
 
     /**
      * Calculate tax for an invoice
@@ -105,10 +106,50 @@ class InvoiceCalculator {
      * - At least one item
      * - etc.
      */
-    public static function validateInvoice($invoice) {
+    public static function validateInvoice($invoice)
+    {
         $errors = [];
 
-        // TODO: Add actual validation logic
+        // Validate customer name
+        $customer = $invoice->getCustomer();
+        if (empty($customer) || trim($customer) === '') {
+            $errors[] = 'Customer name cannot be empty';
+        }
+
+        // Validate at least one item exists
+        $items = $invoice->getItems();
+        if (empty($items)) {
+            $errors[] = 'Invoice must contain at least one item';
+        }
+
+        // Validate each item
+        foreach ($items as $index => $item) {
+            $itemNum = $index + 1;
+
+            // Check if item has required fields
+            if (!isset($item['name']) || empty(trim($item['name']))) {
+                $errors[] = "Item #{$itemNum}: name is required";
+            }
+
+            if (!isset($item['price'])) {
+                $errors[] = "Item #{$itemNum}: price is required";
+            } elseif (!is_numeric($item['price'])) {
+                $errors[] = "Item #{$itemNum}: price must be numeric";
+            } elseif ($item['price'] < 0) {
+                $errors[] = "Item #{$itemNum}: price cannot be negative";
+            }
+
+            // Check quantity field (handle both 'quantity' and 'qty')
+            $quantity = isset($item['quantity']) ? $item['quantity'] : (isset($item['qty']) ? $item['qty'] : null);
+
+            if ($quantity === null) {
+                $errors[] = "Item #{$itemNum}: quantity is required";
+            } elseif (!is_numeric($quantity)) {
+                $errors[] = "Item #{$itemNum}: quantity must be numeric";
+            } elseif ($quantity <= 0) {
+                $errors[] = "Item #{$itemNum}: quantity must be greater than zero";
+            }
+        }
 
         return $errors;
     }
