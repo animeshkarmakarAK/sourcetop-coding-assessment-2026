@@ -1,5 +1,11 @@
 <?php
 
+namespace InvoiceSystem\Tests;
+
+use Exception;
+use InvoiceCalculator;
+use InvoiceSystem\Invoice;
+
 /**
  * Basic tests for Invoice system
  *
@@ -9,13 +15,8 @@
  *
  * Run with: php run_tests.php
  */
-
-require_once __DIR__ . '/../src/Invoice.php';
-require_once __DIR__ . '/../src/InvoiceCalculator.php';
-require_once __DIR__ . '/../src/PDFGenerator.php';
-
-class InvoiceTest {
-
+class InvoiceTest
+{
     private $testsPassed = 0;
     private $testsFailed = 0;
     private $failures = [];
@@ -23,7 +24,8 @@ class InvoiceTest {
     /**
      * Run all tests
      */
-    public function runAll() {
+    public function runAll()
+    {
         echo "Running Invoice Tests...\n";
         echo str_repeat("=", 50) . "\n\n";
 
@@ -51,7 +53,8 @@ class InvoiceTest {
      * Test: Create basic invoice
      * Status: PASSING ✓
      */
-    private function test_create_invoice() {
+    private function test_create_invoice()
+    {
         $invoice = new Invoice("Test Customer");
 
         $this->assert(
@@ -68,7 +71,8 @@ class InvoiceTest {
      * This test fails because of the qty/quantity mismatch bug
      * The total comes back as 0 instead of expected value
      */
-    private function test_calculate_total() {
+    private function test_calculate_total()
+    {
         $invoice = new Invoice("Test Customer");
         $invoice->addItem("Test Item", 10.00, 2);
 
@@ -88,7 +92,8 @@ class InvoiceTest {
      *
      * Also fails due to the same qty/quantity bug
      */
-    private function test_add_multiple_items() {
+    private function test_add_multiple_items()
+    {
         $invoice = new Invoice("Test Customer");
         $invoice->addItem("Item 1", 10.00, 2);
         $invoice->addItem("Item 2", 15.00, 3);
@@ -111,8 +116,9 @@ class InvoiceTest {
      * Fails because saveToFile() overwrites the entire file
      * When loading, it can't find the invoice because structure is wrong
      */
-    private function test_save_and_load() {
-        $testFile = __DIR__ . '/../data/test_invoices.json';
+    private function test_save_and_load()
+    {
+        $testFile = __DIR__ . '/../data/invoices.json';
 
         // Clean up first
         if (file_exists($testFile)) {
@@ -128,6 +134,7 @@ class InvoiceTest {
         $invoice2 = new Invoice("Customer 2");
         $invoice2->addItem("Item B", 200.00, 1);
         $invoice2->saveToFile($testFile);
+
 
         // Try to load first invoice - this will fail
         // because saveToFile overwrites everything
@@ -159,7 +166,8 @@ class InvoiceTest {
      * This works because the hardcoded tax rate is consistent
      * (Even though it should load from JSON instead)
      */
-    private function test_tax_calculation() {
+    private function test_tax_calculation()
+    {
         $subtotal = 100.00;
         $tax = InvoiceCalculator::calculateTax($subtotal, 'US-CA');
 
@@ -176,7 +184,8 @@ class InvoiceTest {
     /**
      * Simple assertion helper
      */
-    private function assert($condition, $testName, $message) {
+    private function assert($condition, $testName, $message)
+    {
         if ($condition) {
             $this->testsPassed++;
             echo "✓ " . $testName . "\n";

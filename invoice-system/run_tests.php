@@ -7,6 +7,14 @@
  * No external dependencies required
  */
 
+use InvoiceSystem\Tests\InvoiceTest;
+
+// Include source files
+require_once __DIR__ . '/src/Invoice.php';
+require_once __DIR__ . '/src/InvoiceCalculator.php';
+require_once __DIR__ . '/src/PDFGenerator.php';
+
+
 echo "\n";
 echo "╔════════════════════════════════════════════════════════════╗\n";
 echo "║           INVOICE SYSTEM - TEST RUNNER                     ║\n";

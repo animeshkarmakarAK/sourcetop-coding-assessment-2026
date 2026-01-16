@@ -1,5 +1,9 @@
 <?php
 
+namespace InvoiceSystem;
+
+use Exception;
+
 /**
  * Invoice Class
  *
@@ -7,15 +11,16 @@
  * Started: 2 weeks ago
  * Last modified: Friday (was in a hurry)
  */
-class Invoice {
-
+class Invoice
+{
     private $customer;
     private $items = [];
     private $discount = 0;
     private $id;
     private $createdAt;
 
-    public function __construct($customerName) {
+    public function __construct($customerName)
+    {
         $this->customer = $customerName;
         $this->id = time(); // Not sure if this is the best approach...
         $this->createdAt = date('Y-m-d H:i:s');
@@ -25,7 +30,8 @@ class Invoice {
      * Add an item to the invoice
      * Note: Make sure to use consistent naming!
      */
-    public function addItem($name, $price, $quantity) {
+    public function addItem($name, $price, $quantity): void
+    {
         // No validation yet - add later?
         $this->items[] = [
             'name' => $name,
@@ -38,11 +44,13 @@ class Invoice {
      * Calculate total
      * BUG: This doesn't match up with addItem() - need to fix
      */
-    public function getTotal() {
+    public function getTotal(): float
+    {
         $total = 0;
+
         foreach ($this->items as $item) {
             // Accessing 'quantity' but we stored it as 'qty'!
-            $total += $item['price'] * $item['quantity'];
+            $total += $item['price'] * $item['qty'];
         }
         return $total - $this->discount;
     }
@@ -52,7 +60,8 @@ class Invoice {
      * TODO: Should discounts apply before or after tax?
      * TODO: Client hasn't decided on the business rules yet
      */
-    public function applyDiscount($percent) {
+    public function applyDiscount($percent)
+    {
         // Started implementing but not sure about requirements
         // throw new Exception("Not implemented - waiting on client clarification");
 
@@ -67,28 +76,32 @@ class Invoice {
     /**
      * Get invoice ID
      */
-    public function getId() {
+    public function getId(): int
+    {
         return $this->id;
     }
 
     /**
      * Get customer name
      */
-    public function getCustomer() {
+    public function getCustomer(): string
+    {
         return $this->customer;
     }
 
     /**
      * Get items array
      */
-    public function getItems() {
+    public function getItems(): array
+    {
         return $this->items;
     }
 
     /**
      * Convert invoice to array for JSON serialization
      */
-    public function toArray() {
+    public function toArray(): array
+    {
         return [
             'id' => $this->id,
             'customer' => $this->customer,
@@ -104,15 +117,20 @@ class Invoice {
      * FIXME: This overwrites everything! Need to fix but running out of time
      * Should APPEND to the file, not replace it
      */
-    public function saveToFile($filename = 'data/invoices.json') {
-        $data = $this->toArray();
+    public function saveToFile($filename = 'data/invoices.json'): bool
+    {
+        $newData = $this->toArray();
+        $existingData = [];
 
-        // This is wrong - overwrites the whole file!
-        // Should load existing invoices and append
-        // But json_encode is easier for now...
-        file_put_contents($filename, json_encode($data, JSON_PRETTY_PRINT));
+        if (file_exists($filename)) {
+            $existingContent = file_get_contents($filename);
+            $existingData = json_decode($existingContent, true) ?: [];
+        }
 
-        // TODO: Fix this before client demo!
+        $existingData[] = $newData;
+
+        file_put_contents($filename, json_encode($existingData, JSON_PRETTY_PRINT));
+
         return true;
     }
 
@@ -120,7 +138,8 @@ class Invoice {
      * Load invoice from file by ID
      * Started this but didn't finish testing it
      */
-    public static function loadFromFile($id, $filename = 'data/invoices.json') {
+    public static function loadFromFile($id, $filename = 'data/invoices.json'): Invoice
+    {
         if (!file_exists($filename)) {
             throw new Exception("Invoice file not found");
         }
