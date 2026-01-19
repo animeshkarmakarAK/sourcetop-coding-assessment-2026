@@ -7,6 +7,9 @@
  * No external dependencies required
  */
 
+// Include Composer autoloader for dependencies (Dompdf, PHPUnit, etc.)
+require_once __DIR__ . '/vendor/autoload.php';
+
 use InvoiceSystem\Tests\InvoiceTest;
 
 // Include source files

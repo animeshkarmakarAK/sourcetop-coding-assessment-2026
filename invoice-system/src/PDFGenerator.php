@@ -1,5 +1,11 @@
 <?php
 
+namespace InvoiceSystem;
+
+use Dompdf\Dompdf;
+use Exception;
+use InvoiceSystem\Invoice;
+
 /**
  * PDFGenerator - Generate PDF invoices
  *
@@ -13,8 +19,8 @@
  * - Policy has been updated - external libraries now allowed
  * - Can proceed with implementation using Composer packages
  */
-class PDFGenerator {
-
+class PDFGenerator
+{
     /**
      * Generate PDF from invoice
      *
@@ -34,11 +40,33 @@ class PDFGenerator {
      * @return string PDF file path or content
      * @throws Exception Currently not implemented
      */
-    public function generatePDF($invoice) {
-        throw new Exception(
-            "PDF generation not implemented. " .
-            "You may now use Composer packages (FPDF, TCPDF, Dompdf, etc.)."
-        );
+    public function generatePDF(Invoice $invoice): string
+    {
+        try {
+            //create storage/invoices directory if not exists
+            $invoiceDir = __DIR__ . '/../storage/invoices/';
+
+            if (!is_dir($invoiceDir)) {
+                mkdir($invoiceDir, 0777, true);
+            }
+            $invoiceId = $invoice->getId();
+            $pdfPath = $invoiceDir . 'invoice_' . $invoiceId . '.pdf';
+
+            if (file_exists($pdfPath)) {
+                return $pdfPath;
+            }
+
+            $html = $this->generateHTML($invoice);
+            $dompdf = new Dompdf();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+            file_put_contents($pdfPath, $dompdf->output());
+
+            return $pdfPath;
+        } catch (\Exception $e) {
+            throw new Exception("PDF generation failed: " . $e->getMessage());
+        }
     }
 
     /**
@@ -51,7 +79,8 @@ class PDFGenerator {
      * @param Invoice $invoice
      * @return string HTML content
      */
-    private function generateHTML($invoice) {
+    private function generateHTML($invoice)
+    {
         // Basic template - would need styling
         $html = '<html><head><title>Invoice</title></head><body>';
         $html .= '<h1>Invoice #' . $invoice->getId() . '</h1>';
@@ -85,7 +114,8 @@ class PDFGenerator {
      * @param Invoice $invoice
      * @return string HTML file path
      */
-    public function exportHTML($invoice) {
+    public function exportHTML($invoice)
+    {
         $html = $this->generateHTML($invoice);
         $filename = 'invoice_' . $invoice->getId() . '.html';
         file_put_contents($filename, $html);
@@ -96,7 +126,8 @@ class PDFGenerator {
      * Attempted to write raw PDF - gave up after 2 hours
      * Keeping this as evidence of how hard this is
      */
-    private function generateRawPDF_ABANDONED($invoice) {
+    private function generateRawPDF_ABANDONED($invoice)
+    {
         // PDF header
         // %PDF-1.4
         // Then you need:
