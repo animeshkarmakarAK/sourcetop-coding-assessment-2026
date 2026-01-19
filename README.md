@@ -27,6 +27,8 @@ echo "Total: $" . $invoice->getTotal() . "\n";
 │   ├── Invoice.php           - Main invoice class
 │   ├── InvoiceCalculator.php - Tax and business logic helpers
 │   └── PDFGenerator.php      - PDF export (not implemented)
+├── storage/
+|
 ├── data/
 │   ├── invoices.json         - Stored invoices
 │   └── tax_rates.json        - Tax rate configuration
