@@ -8,31 +8,31 @@
  */
 class InvoiceCalculator
 {
-
     /**
      * Calculate tax for an invoice
-     *
-     * TODO: Load tax rates from data/tax_rates.json instead of hardcoding
-     * Currently just using 10% for everything which is WRONG
      *
      * @param float $subtotal The subtotal before tax
      * @param string $region Region code (e.g., "US-CA", "CA-ON")
      * @return float Tax amount
      */
-    public static function calculateTax($subtotal, $region = 'US-CA') {
-        // TEMPORARY hardcoded value - need to load from JSON
-        // Client said tax rates change frequently so should be in config
+    public static function calculateTax($subtotal, $region = 'US-CA'): float
+    {
         $taxRate = 0.10;
 
-        // TODO: Load from tax_rates.json like this:
-        // $taxData = json_decode(file_get_contents('data/tax_rates.json'), true);
-        // Parse $region to get country and state
-        // Look up actual rate
-        // Handle default rates
-        //
-        // Ran out of time Friday, will fix Monday
+        $taxData = json_decode(file_get_contents('data/tax_rates.json'), true);
+        $region = explode('-', $region);
+        $country = $region[0];
+        $state = $region[1] ?? '';
 
-        return $subtotal * $taxRate;
+        if (isset($taxData[$country])) {
+            if ($state && isset($taxData[$country][$state])) {
+                $taxRate = $taxData[$country][$state];
+            } elseif (isset($taxData[$country]['default'])) {
+                $taxRate = $taxData[$country]['default'];
+            }
+        }
+
+        return round($subtotal * $taxRate, 2);
     }
 
     /**

@@ -108,6 +108,9 @@ class InvoiceTest
         // Create and save first invoice
         $invoice1 = new Invoice("Customer 1");
         $invoice1->addItem("Item A", 100.00, 1);
+
+        $pdfGenerator = new \InvoiceSystem\PDFGenerator();
+        $pdfGenerator->generatePDF($invoice1);
         $invoice1->saveToFile($testFile);
 
         // Create and save second invoice
@@ -138,8 +141,7 @@ class InvoiceTest
         $subtotal = 100.00;
         $tax = InvoiceCalculator::calculateTax($subtotal, 'US-CA');
 
-        // Hardcoded to 10% currently
-        $expected = 10.00;
+        $expected = 7.25;
 
         $this->assert(
             $tax === $expected,
