@@ -1,5 +1,7 @@
 <?php
 
+use InvoiceSystem\Invoice;
+
 /**
  * InvoiceCalculator - Helper class for invoice calculations
  *
@@ -50,7 +52,8 @@ class InvoiceCalculator
      * @param Invoice $invoice
      * @return Invoice Modified invoice
      */
-    public static function applyBusinessRules($invoice) {
+    public static function applyBusinessRules(Invoice $invoice): Invoice
+    {
         // Need to figure out requirements first
 
         // Pseudo-code for what they MIGHT want:
@@ -77,7 +80,8 @@ class InvoiceCalculator
      * @param array $item Item with price and quantity
      * @return float Line item total
      */
-    public static function calculateLineItem($item) {
+    public static function calculateLineItem($item): float
+    {
         $price = $item['price'];
         $quantity = $item['quantity'];
 
@@ -91,7 +95,8 @@ class InvoiceCalculator
      * @param float $amount
      * @return string Formatted currency
      */
-    public static function formatCurrency($amount) {
+    public static function formatCurrency($amount): string
+    {
         return '$' . number_format($amount, 2);
     }
 
@@ -106,11 +111,10 @@ class InvoiceCalculator
      * - At least one item
      * - etc.
      */
-    public static function validateInvoice($invoice)
+    public static function validateInvoice($invoice): array
     {
         $errors = [];
 
-        // Validate customer name
         $customer = $invoice->getCustomer();
         if (empty($customer) || trim($customer) === '') {
             $errors[] = 'Customer name cannot be empty';
