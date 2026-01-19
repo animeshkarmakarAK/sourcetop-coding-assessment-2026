@@ -144,7 +144,7 @@ class InvoiceCalculator
             }
 
             // Check quantity field (handle both 'quantity' and 'qty')
-            $quantity = isset($item['quantity']) ? $item['quantity'] : (isset($item['qty']) ? $item['qty'] : null);
+            $quantity = $item['quantity'];
 
             if ($quantity === null) {
                 $errors[] = "Item #{$itemNum}: quantity is required";
