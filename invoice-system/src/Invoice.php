@@ -96,33 +96,22 @@ class Invoice
         throw new Exception("Discount feature incomplete - need business rules from client");
     }
 
-    /**
-     * Get invoice ID
-     */
+
     public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * Get customer name
-     */
     public function getCustomer(): string
     {
         return $this->customer;
     }
 
-    /**
-     * Get items array
-     */
     public function getItems(): array
     {
         return $this->items;
     }
 
-    /**
-     * Convert invoice to array for JSON serialization
-     */
     public function toArray(): array
     {
         return [
@@ -160,7 +149,7 @@ class Invoice
      * Load invoice from file by ID
      * Started this but didn't finish testing it
      */
-    public static function loadFromFile($id): Invoice
+    public static function loadFromFile(string $id): Invoice
     {
         if (!file_exists(self::FILEPATH)) {
             throw new Exception("Invoice file not found");
