@@ -6,13 +6,6 @@ use BlakvGhost\PHPValidator\Validator;
 use Exception;
 use Ramsey\Uuid\Uuid;
 
-/**
- * Invoice Class
- *
- * Handles invoice creation and management
- * Started: 2 weeks ago
- * Last modified: Friday (was in a hurry)
- */
 class Invoice
 {
     private $customer;
@@ -30,10 +23,6 @@ class Invoice
         $this->createdAt = date('Y-m-d H:i:s');
     }
 
-    /**
-     * Generate the next sequential invoice ID
-     * Reads existing invoices and returns the next ID in ascending order
-     */
     private static function generateInvoiceId(): string
     {
         return Uuid::uuid4()->toString();
@@ -180,8 +169,6 @@ class Invoice
         $contents = file_get_contents(self::FILEPATH);
         $invoices = json_decode($contents, true);
 
-        // Handle both single invoice and array of invoices
-        // (since saveToFile is broken and only saves one)
         if (isset($invoices['id'])) {
             $invoices = [$invoices];
         }

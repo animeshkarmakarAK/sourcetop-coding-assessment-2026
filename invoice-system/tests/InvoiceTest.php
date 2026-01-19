@@ -109,9 +109,6 @@ class InvoiceTest
         // Create and save first invoice
         $invoice1 = new Invoice("Customer 1");
         $invoice1->addItem("Item A", 100.00, 1);
-
-        $pdfGenerator = new \InvoiceSystem\PDFGenerator();
-        $pdfGenerator->generatePDF($invoice1);
         $invoice1->saveToFile($testFile);
 
         // Create and save second invoice
