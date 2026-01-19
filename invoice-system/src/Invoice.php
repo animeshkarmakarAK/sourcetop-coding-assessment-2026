@@ -4,6 +4,7 @@ namespace InvoiceSystem;
 
 use BlakvGhost\PHPValidator\Validator;
 use Exception;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Invoice Class
@@ -33,29 +34,9 @@ class Invoice
      * Generate the next sequential invoice ID
      * Reads existing invoices and returns the next ID in ascending order
      */
-    private static function generateNextId(): int
+    private static function generateNextId(): string
     {
-        $maxId = 0;
-
-        if (file_exists(self::FILEPATH)) {
-            $contents = file_get_contents(self::FILEPATH);
-            $invoices = json_decode($contents, true);
-
-            if (!empty($invoices)) {
-                // Handle both single invoice and array of invoices
-                if (isset($invoices['id'])) {
-                    $invoices = [$invoices];
-                }
-
-                foreach ($invoices as $invoice) {
-                    if (isset($invoice['id']) && is_numeric($invoice['id'])) {
-                        $maxId = max($maxId, (int)$invoice['id']);
-                    }
-                }
-            }
-        }
-
-        return $maxId + 1;
+        return Uuid::uuid4()->toString();
     }
 
     /**
@@ -129,7 +110,7 @@ class Invoice
     /**
      * Get invoice ID
      */
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
