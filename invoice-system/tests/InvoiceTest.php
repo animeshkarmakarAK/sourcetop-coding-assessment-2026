@@ -34,6 +34,7 @@ class InvoiceTest
         $this->test_add_multiple_items();
         $this->test_save_and_load();
         $this->test_tax_calculation();
+        $this->test_invoice_pdf_generation();
 
         echo "\n" . str_repeat("=", 50) . "\n";
         echo "Tests Passed: " . $this->testsPassed . "\n";
@@ -150,10 +151,38 @@ class InvoiceTest
         );
     }
 
+    private function test_invoice_pdf_generation(): void
+    {
+        $invoice = new Invoice("PDF Customer");
+        $invoice->addItem("PDF Item", 50.00, 2);
+
+        $pdfGenerator = new \InvoiceSystem\PDFGenerator();
+        try {
+            $pdfPath = $pdfGenerator->generatePDF($invoice);
+
+            $this->assert(
+                file_exists($pdfPath),
+                "test_invoice_pdf_generation",
+                "PDF file should be created at " . $pdfPath
+            );
+
+            // Clean up generated PDF
+            if (file_exists($pdfPath)) {
+                unlink($pdfPath);
+            }
+        } catch (Exception $e) {
+            $this->assert(
+                false,
+                "test_invoice_pdf_generation",
+                "PDF generation failed: " . $e->getMessage()
+            );
+        }
+    }
+
     /**
      * Simple assertion helper
      */
-    private function assert($condition, $testName, $message)
+    private function assert($condition, $testName, $message): void
     {
         if ($condition) {
             $this->testsPassed++;
