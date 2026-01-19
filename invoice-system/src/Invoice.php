@@ -26,7 +26,7 @@ class Invoice
     public function __construct($customerName)
     {
         $this->customer = $customerName;
-        $this->id = self::generateNextId();
+        $this->id = self::generateInvoiceId();
         $this->createdAt = date('Y-m-d H:i:s');
     }
 
@@ -34,7 +34,7 @@ class Invoice
      * Generate the next sequential invoice ID
      * Reads existing invoices and returns the next ID in ascending order
      */
-    private static function generateNextId(): string
+    private static function generateInvoiceId(): string
     {
         return Uuid::uuid4()->toString();
     }
