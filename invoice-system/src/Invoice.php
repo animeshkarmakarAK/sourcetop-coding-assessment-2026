@@ -2,6 +2,7 @@
 
 namespace InvoiceSystem;
 
+use BlakvGhost\PHPValidator\Validator;
 use Exception;
 
 /**
@@ -63,12 +64,34 @@ class Invoice
      */
     public function addItem($name, $price, $quantity): void
     {
-        // No validation yet - add later?
-        $this->items[] = [
+        $data = [
             'name' => $name,
             'price' => $price,
-            'quantity' => $quantity,
+            'quantity' => $quantity
         ];
+        $validator = new Validator(
+            $data,
+            [
+                'name' => 'required|string',
+                'price' => 'required|numeric|min:0',
+                'quantity' => 'required|numeric|min:1'
+            ],
+            [
+                'name.required' => 'Item name is required',
+                'price.required' => 'Item price is required',
+                'price.numeric' => 'Item price must be a number',
+                'price.min' => 'Item price cannot be negative',
+                'quantity.required' => 'Item quantity is required',
+                'quantity.numeric' => 'Item quantity must be a number',
+                'quantity.min' => 'Item quantity must be at least 1'
+            ]
+        );
+        if (!$validator->validated()) {
+            $errors = $validator->getErrors();
+            throw new Exception("Invalid item data: " . implode('; ', $errors));
+        }
+
+        $this->items[] = $data;
     }
 
     /**
@@ -144,8 +167,7 @@ class Invoice
 
     /**
      * Save invoice to file
-     * FIXME: This overwrites everything! Need to fix but running out of time
-     * Should APPEND to the file, not replace it
+     * @return bool
      */
     public function saveToFile(): bool
     {
